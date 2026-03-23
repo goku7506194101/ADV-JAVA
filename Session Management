@@ -8,17 +8,24 @@ public class StudentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
-        response.setContentType("text/html");
-
         String name = request.getParameter("name");
+        String id = request.getParameter("id");
+        String dept = request.getParameter("dept");
 
         HttpSession session = request.getSession();
         session.setAttribute("name", name);
+        session.setAttribute("id", id);
+        session.setAttribute("dept", dept);
 
         PrintWriter out = response.getWriter();
 
         out.println("<form action='MarksServlet' method='post'>");
-        out.println("Enter Marks: <input type='text' name='marks'><br>");
+        out.println("Subject 1: <input type='number' name='m1'><br>");
+        out.println("Subject 2: <input type='number' name='m2'><br>");
+        out.println("Subject 3: <input type='number' name='m3'><br>");
+        out.println("Subject 4: <input type='number' name='m4'><br>");
+        out.println("Subject 5: <input type='number' name='m5'><br>");
+        out.println("Subject 6: <input type='number' name='m6'><br>");
         out.println("<input type='submit'>");
         out.println("</form>");
     }
@@ -34,18 +41,35 @@ public class MarksServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
-        response.setContentType("text/html");
-
         HttpSession session = request.getSession();
 
         String name = (String) session.getAttribute("name");
-        String marks = request.getParameter("marks");
+        String id = (String) session.getAttribute("id");
+        String dept = (String) session.getAttribute("dept");
+
+        int m1 = Integer.parseInt(request.getParameter("m1"));
+        int m2 = Integer.parseInt(request.getParameter("m2"));
+        int m3 = Integer.parseInt(request.getParameter("m3"));
+        int m4 = Integer.parseInt(request.getParameter("m4"));
+        int m5 = Integer.parseInt(request.getParameter("m5"));
+        int m6 = Integer.parseInt(request.getParameter("m6"));
+
+        boolean pass = m1>=35 && m2>=35 && m3>=35 &&
+                       m4>=35 && m5>=35 && m6>=35;
 
         PrintWriter out = response.getWriter();
 
-        out.println("<h2>Name: " + name + "</h2>");
-        out.println("<h2>Marks: " + marks + "</h2>");
+        out.println("Student Name: " + name);
+        out.println("ID: " + id);
+        out.println("Dept: " + dept);
+
+        if(pass)
+            out.println("<h2 style='color:green'>PASS</h2>");
+        else
+            out.println("<h2 style='color:red'>FAIL</h2>");
 
         session.invalidate();
     }
 }
+
+
