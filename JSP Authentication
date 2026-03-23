@@ -1,0 +1,75 @@
+//Login.jsp
+<%@ page language="java" %>
+<html>
+<head>
+ <title>User Login</title>
+</head>
+<body>
+<h2>User Authentication - JSP</h2>
+<form action="authenticate.jsp" method="post">
+ Username: <input type="text" name="username"><br><br>
+ Password: <input type="password" name="password"><br><br>
+ <input type="submit" value="Login">
+</form>
+</body>
+</html>
+
+//authenticate.jsp
+<%@ page import="java.sql.*" %>
+
+<%
+    String user = request.getParameter("username");
+    String pass = request.getParameter("password");
+
+    boolean valid = false;
+
+    try {
+        // Load Driver
+        Class.forName("com.mysql.cj.jdbc.Driver");
+
+        // Create Connection
+        Connection con = DriverManager.getConnection(
+            "jdbc:mysql://localhost:3307/jsp_db",
+            "root",
+            ""
+        );
+
+        // Prepare Query
+        PreparedStatement ps = con.prepareStatement(
+            "SELECT * FROM users WHERE username=? AND password=?"
+        );
+
+        ps.setString(1, user);
+        ps.setString(2, pass);
+
+        // Execute Query
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            valid = true;
+        }
+
+        // Close Resources
+        rs.close();
+        ps.close();
+        con.close();
+
+    } catch (Exception e) {
+        out.println("Error: " + e);
+    }
+
+    if (valid) {
+%>
+
+        <h2 style="color:green">Login Successful</h2>
+        <h3>Welcome, <%= user %></h3>
+
+<%
+    } else {
+%>
+
+        <h2 style="color:red">Invalid Username or Password</h2>
+
+<%
+    }
+%>
