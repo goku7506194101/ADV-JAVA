@@ -1,47 +1,104 @@
-import javax.swing.*;
+//DB.java
+package db;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class DB {
+    public static Connection getCon() {
+        Connection con = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/practical3_db",
+                "root",
+                ""
+            );
+
+            System.out.println("Database Connected Successfully");
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL Driver Not Found");
+        } catch (SQLException e) {
+            System.out.println("Database Connection Failed");
+        }
+        return con;
+    }
+}
+
+//Register.java
+package gui;
+
+import db.DB;
 import java.sql.*;
+import javax.swing.*;
+import java.awt.event.*;
 
-public class Practical3 {
-    public static void main(String[] args) {
+public class Register extends JFrame {
 
-        JFrame f = new JFrame("Registration Form");
+    JTextField txtName, txtEmail, txtPhone;
+    JButton btnSave;
+
+    public Register() {
+        setTitle("Registration Form");
+        setSize(350, 250);
+        setLayout(null);
 
         JLabel l1 = new JLabel("Name:");
-        l1.setBounds(50, 50, 100, 30);
+        l1.setBounds(30, 30, 100, 25);
+        add(l1);
 
-        JTextField t1 = new JTextField();
-        t1.setBounds(150, 50, 150, 30);
+        txtName = new JTextField();
+        txtName.setBounds(120, 30, 150, 25);
+        add(txtName);
 
-        JButton b = new JButton("Save");
-        b.setBounds(150, 100, 100, 30);
+        JLabel l2 = new JLabel("Email:");
+        l2.setBounds(30, 70, 100, 25);
+        add(l2);
 
-        b.addActionListener(e -> {
-            try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
+        txtEmail = new JTextField();
+        txtEmail.setBounds(120, 70, 150, 25);
+        add(txtEmail);
 
-                Connection con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/practical3_db","root","");
+        JLabel l3 = new JLabel("Phone:");
+        l3.setBounds(30, 110, 100, 25);
+        add(l3);
 
-                PreparedStatement ps = con.prepareStatement(
-                    "INSERT INTO user(name) VALUES(?)");
+        txtPhone = new JTextField();
+        txtPhone.setBounds(120, 110, 150, 25);
+        add(txtPhone);
 
-                ps.setString(1, t1.getText());
-                ps.executeUpdate();
+        btnSave = new JButton("Save");
+        btnSave.setBounds(120, 160, 80, 30);
+        add(btnSave);
 
-                JOptionPane.showMessageDialog(f, "Data Saved Successfully");
+        btnSave.addActionListener(e -> saveData());
 
-                con.close();
-            } catch(Exception ex) {
-                ex.printStackTrace();
-            }
-        });
+        setVisible(true);
+    }
 
-        f.add(l1);
-        f.add(t1);
-        f.add(b);
+    void saveData() {
+        try {
+            Connection con = DB.getCon();
 
-        f.setSize(400, 300);
-        f.setLayout(null);
-        f.setVisible(true);
+            String sql = "INSERT INTO user (name,email_id,phone_number) VALUES(?,?,?)";
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, txtName.getText());
+            ps.setString(2, txtEmail.getText());
+            ps.setString(3, txtPhone.getText());
+
+            ps.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "Data Saved Successfully");
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Insert Failed");
+        }
+    }
+
+    public static void main(String[] args) {
+        new Register();
     }
 }
