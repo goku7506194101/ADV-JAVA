@@ -1,0 +1,41 @@
+//index.html
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Request Redirection</title>
+</head>
+<body>
+ <h2>Servlet Request Redirection</h2>
+ <form action="RedirectServlet" method="post">
+ Enter URL:
+ <input type="text" name="location"
+placeholder="https://www.google.com">
+ <br><br>
+ <input type="submit" value="Go">
+ </form>
+</body>
+</html>
+
+//RedirectServlet.java
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.annotation.WebServlet;
+
+@WebServlet("/RedirectServlet")
+public class RedirectServlet extends HttpServlet {
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String url = request.getParameter("location");
+
+        if (url != null && !url.isEmpty()) {
+            response.sendRedirect(url);
+        } else {
+            response.setContentType("text/html");
+            PrintWriter out = response.getWriter();
+            out.println("<h3>Please enter a valid URL</h3>");
+        }
+    }
+}
