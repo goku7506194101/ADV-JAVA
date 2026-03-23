@@ -1,0 +1,51 @@
+//StudentServlet
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class StudentServlet extends HttpServlet {
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        response.setContentType("text/html");
+
+        String name = request.getParameter("name");
+
+        HttpSession session = request.getSession();
+        session.setAttribute("name", name);
+
+        PrintWriter out = response.getWriter();
+
+        out.println("<form action='MarksServlet' method='post'>");
+        out.println("Enter Marks: <input type='text' name='marks'><br>");
+        out.println("<input type='submit'>");
+        out.println("</form>");
+    }
+}
+
+//MarksServlet
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class MarksServlet extends HttpServlet {
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        response.setContentType("text/html");
+
+        HttpSession session = request.getSession();
+
+        String name = (String) session.getAttribute("name");
+        String marks = request.getParameter("marks");
+
+        PrintWriter out = response.getWriter();
+
+        out.println("<h2>Name: " + name + "</h2>");
+        out.println("<h2>Marks: " + marks + "</h2>");
+
+        session.invalidate();
+    }
+}
